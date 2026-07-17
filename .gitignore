@@ -1,0 +1,75 @@
+# =========================================================
+#  Root .gitignore — covers frontend/ and backend/
+# =========================================================
+
+# --- Secrets / environment ---
+.env
+.env.*
+!.env.example
+*/.env
+*/.env.*
+
+# =========================
+#  Frontend (React / Vite)
+# =========================
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+frontend/.vite/
+frontend/coverage/
+*.local
+
+# Vite / bundler cache
+.vite/
+dist/
+dist-ssr/
+
+# =========================
+#  Backend (Django / Python)
+# =========================
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+backend/venv/
+
+# Python bytecode / build
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+*.egg-info/
+.eggs/
+
+# Django
+db.sqlite3
+db.sqlite3-journal
+*.log
+media/
+staticfiles/
+local_settings.py
+
+# Testing / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.mypy_cache/
+
+# =========================
+#  Editors / OS / misc
+# =========================
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
