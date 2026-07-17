@@ -7,15 +7,18 @@ from google import genai
 from google.genai import types
 from django.conf import settings
 
-from .tools import web_search
+from .tools import read_file, web_search
 
 MODEL = "gemini-flash-lite-latest"
 
 SYSTEM_INSTRUCTION = (
     "You are a research assistant. When a question needs current, factual, or "
-    "niche information, use the web_search tool before answering. Base your "
-    "answer on the search results, be concise, and cite the sources you used "
-    "by title. If the results do not answer the question, say so honestly."
+    "niche information, use the web_search tool before answering. When the "
+    "user refers to a document or file (.txt or .pdf) they've provided, use "
+    "the read_file tool to read its contents before answering. Base your "
+    "answer on the search results and file contents, be concise, and cite the "
+    "sources you used by title. If the results do not answer the question, "
+    "say so honestly."
 )
 
 
@@ -28,8 +31,13 @@ def _extract_sources(afc_history) -> list[dict]:
             if not fn_response:
                 continue
             response = fn_response.response or {}
-            # google-genai wraps a returned list under the "result" key.
-            for item in response.get("result", []):
+            # google-genai wraps a returned value under the "result" key; only
+            # web_search returns a list of source dicts, so skip other tools
+            # (e.g. read_file, which returns a plain string).
+            result = response.get("result")
+            if not isinstance(result, list):
+                continue
+            for item in result:
                 if isinstance(item, dict) and item.get("link"):
                     sources.append(item)
     # De-duplicate by link while preserving order.
@@ -79,7 +87,7 @@ def run_research(query: str, memory=None) -> dict:
         contents=_build_prompt(query, memory),
         config=types.GenerateContentConfig(
             system_instruction=SYSTEM_INSTRUCTION,
-            tools=[web_search],
+            tools=[web_search, read_file],
         ),
     )
 
